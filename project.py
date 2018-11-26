@@ -11,7 +11,12 @@ import httplib2
 import json
 from flask import make_response
 import requests
+# try:
+#     from urllib.parse import urlparse
+# except ImportError:
+#      from urlparse import urlparse
 
+     
 app = Flask(__name__)
 
 CLIENT_ID = json.loads(
@@ -25,6 +30,7 @@ Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+threaded=False
 
 
 # Create anti-forgery state token
@@ -450,4 +456,4 @@ def disconnect():
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, threaded=False)

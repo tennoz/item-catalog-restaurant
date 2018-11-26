@@ -2,9 +2,11 @@ from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
+from sqlalchemy import exc
+from sqlalchemy import event
+from sqlalchemy import select
 
 Base = declarative_base()
-
 
 class User(Base):
     __tablename__ = 'user'
@@ -14,7 +16,6 @@ class User(Base):
     email = Column(String(250), nullable=False)
     picture = Column(String(250))
 
-
 class Restaurant(Base):
     __tablename__ = 'restaurant'
 
@@ -22,7 +23,7 @@ class Restaurant(Base):
     name = Column(String(250), nullable=False)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
-
+    menuitems = relationship("MenuItem", back_populates = "restaurant", cascade = "all, delete")
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
@@ -40,13 +41,10 @@ class MenuItem(Base):
     price = Column(String(8))
     course = Column(String(250))
     restaurant_id = Column(Integer, ForeignKey('restaurant.id'))
-    restaurant = relationship(Restaurant, cascade="all, delete", backref="restaurant")
+    restaurant = relationship("Restaurant", back_populates = "menuitems")
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
-
-
-    
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
